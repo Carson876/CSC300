@@ -49,12 +49,27 @@ void deleteNode(node *&head, int index)
     {
         node* rmp = head;
         head = head ->next;
-        d
+        delete tmp;
     }
     // Handle other index deletions
     else
     {
-        // Write your code here!
+        node* prev = head;
+        int wIndex = 0;
+
+        while (prev !- nullptr && wIndex < index -1)
+        {
+            prev = prev->next;
+            wIndex++;
+        }
+        if(prev == nullptr || prev->next == nullptr)
+        {
+            cout << "index is too big, so deletion is not possible" << endl;
+            return;
+        }
+        node* target = prev->next;
+        prev->next = target->next;
+        delete target;
     }
 }
 
