@@ -83,5 +83,30 @@ void displayList(node *head)
         walker = walker->next;
     }
     cout<<endl;
+    
+ }
+ 
+ node* searchNode(node *head, int key)
+ {
+    for(node* w = head; w != nullptr; w = w->next)
+    {
+        if(w->data == key)
+        return w;
+    }
+    return nullptr;
+ }
 
+ // reverse list using 3 pointer method
+ void reverselist(node *&head)
+ {
+    node* prev = nullptr;
+    node* cur = head;
+    while( cur != nullpter)
+    {
+        node* nxt = cur->next;
+        cur->next = prev; 
+        prev = cur;
+        cur = nxt;
+    }
+    head = prev;
  }
