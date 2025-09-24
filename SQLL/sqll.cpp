@@ -17,12 +17,21 @@ Stack::~Stack()
 
 void Stack::push(string& value) 
 {
-    // complete this
+    node* newNode = new node(value);
+    newNode->next = top;
+    top = newNode;
 }
-
 string Stack::pop() 
 {
-    // complete this
+     if (isEmpty())
+    {
+        throw runtime_error("Stack underflow");
+    }
+    node* temp = top;
+    string out = temp->data;
+    top = top->next;
+    delete temp;
+    return out;
 }
 
 string Stack::peek() 
@@ -70,12 +79,30 @@ Queue::~Queue()
 
 void Queue::enqueue(string& value) 
 {
-    // complete this
+    node* newNode = new node(value);
+    if (isEmpty())
+    {
+        front = rear = newNode;
+    }
+    else
+    {
+        rear->next = newNode;
+        rear = newNode;
+    } 
 }
 
 string Queue::dequeue() 
 {
-    // complete this
+     if (isEmpty())
+    {
+        throw runtime_error("Queue underflow");
+    }
+    node* temp = front;
+    string out = temp->data;
+    front = front->next;
+    if (front == nullptr) rear = nullptr; // queue became empty
+    delete temp;
+    return out;
 }
 
 bool Queue::isEmpty() 
@@ -97,8 +124,89 @@ void Queue::display()
 }
 //======================= DIJKSTRA'S TWO STACK ===========================
 double evaluateExpression(string& expr) 
-{
-    // complete this using stacks
+{ 
+    Stack ops;   
+    Stack vals;  
+
+    auto isOp = [](char c) {
+        return c=='+' || c=='-' || c=='*' || c=='/' || c=='^';
+    };
+
+    auto apply = [&](const string& op, double a, double b) -> double {
+        if (op == "+") return a + b;
+        if (op == "-") return a - b;
+        if (op == "*") return a * b;
+        if (op == "/") return a / b;
+        if (op == "^") return pow(a, b);
+        throw runtime_error("Unknown operator: " + op);
+    };
+
+    for (size_t i = 0; i < expr.size(); )
+    {
+        if (isspace(static_cast<unsigned char>(expr[i])))
+        {
+            ++i;
+            continue;
+        }
+
+        if (expr[i] == '(')
+        {
+            ++i;
+        }
+        else if (isOp(expr[i]))
+        {
+            string op(1, expr[i]);
+            ops.push(op); 
+            ++i;
+        }
+        else if (expr[i] == ')')
+        {
+            string op = ops.pop();
+            double vb = stod(vals.pop());
+            double va = stod(vals.pop());
+            double vr = apply(op, va, vb);
+            string res = to_string(vr);
+            vals.push(res);
+            ++i;
+        }
+        else
+        {
+            size_t j = i;
+            bool dotSeen = false;
+            if ((expr[j] == '+' || expr[j] == '-') && j+1 < expr.size() && isdigit(static_cast<unsigned char>(expr[j+1])))
+                ++j;
+
+            while (j < expr.size() && (isdigit(static_cast<unsigned char>(expr[j])) || expr[j]=='.'))
+            {
+                if (expr[j]=='.')
+                {
+                    if (dotSeen) break;
+                    dotSeen = true;
+                }
+                ++j;
+            }
+            if (j == i) throw runtime_error("Invalid token at position " + to_string(i));
+            string num = expr.substr(i, j - i);
+            vals.push(num);
+            i = j;
+        }
+    }
+
+    if (!ops.isEmpty())
+    {
+       
+        while (!ops.isEmpty())
+        {
+            string op = ops.pop();
+            double vb = stod(vals.pop());
+            double va = stod(vals.pop());
+            double vr = (op=="+")?va+vb:(op=="-")?va-vb:(op=="*")?va*vb:(op=="/")?va/vb:pow(va,vb);
+            string res = to_string(vr);
+            vals.push(res);
+        }
+    }
+
+    return stod(vals.pop());
 }
 
 // ============= JOSEPHUS PROBLEM ===========================
