@@ -212,5 +212,35 @@ double evaluateExpression(string& expr)
 // ============= JOSEPHUS PROBLEM ===========================
 void josephus(int n, int k) 
 {
-    // complete this using queue
+ if (n <= 0 || k <= 0)
+        throw runtime_error("n and k must be positive");
+
+    Queue q;
+    for (int i = 1; i <= n; ++i)
+    {
+        string s = to_string(i);
+        q.enqueue(s);
+    }
+
+    cout << "Elimination order: ";
+    int alive = n;
+
+    while (alive > 1)
+    {
+        // Move k-1 people from front to rear
+        for (int r = 1; r < k; ++r)
+        {
+            string x = q.dequeue();
+            q.enqueue(x);
+        }
+
+        // Remove the k-th person
+        string eliminated = q.dequeue();
+        cout << eliminated << (alive > 2 ? " " : "");
+        --alive;
+    }
+
+    // Last remaining is the survivor
+    string survivor = q.dequeue();
+    cout << "\nSurvivor: " << survivor << endl;
 }
